@@ -8,37 +8,31 @@ import hashlib
 
 app = Flask(__name__)
 
-
-allData = ""
-
 @app.route("/")
 def hello_world():
     return "<p>Hello, World!</p>"
 
-@app.route("/loginPost", methods=["POST"])
+@app.route("/login", methods=["POST"])
 def loginPost():
     try:
         bname = request.form['bname']
         email = request.form['email']
         passwd = request.form['passwd']
 
-        print("blaskfa")
-        print(bname)
-        print(email)
-        print(passwd)
-
         with sql.connect("database.db") as con:
             cur = con.cursor()
-
-            cur.execute('''INSERT INTO benutzer (bname,email,md5(passwd))
-            VALUES (?,?,?)''',(bname,email,passwd))
-
-            con.commit()
-            msg = "Record successfully added"
+            cur.execute("SELECT bname, email, passwd FROM benutzer WHERE email = ? AND passwd = ?", (email, hash(passwd)))
+            users = cur.fetchall()
+            if (len(users) == 1):
+                msg = "Willkommen!"
+            elif (len(users) > 1):
+                msg = "Fehler"
+            else:
+                msg = "Benutzername oder Passwort ist nicht korrekt"
 
     except:
         con.rollback()
-        msg = "error in insert operation"
+        msg = "error beim einloggen"
     finally:
         return msg
         con.close()
@@ -51,10 +45,10 @@ def signupPOST():
         passwd = request.form['passwd']
 
         with sql.connect("database.db") as con:
-            # con.execute("drop table benutzer")
-            con.execute('CREATE TABLE IF NOT EXISTS benutzer (email TEXT PRIMARY KEY, bname TEXT, passwd TEXT)')
+            con.execute("drop table benutzer")
+            con.execute("CREATE TABLE IF NOT EXISTS benutzer (email TEXT PRIMARY KEY, bname TEXT, passwd TEXT)")
 
-            con.execute('''INSERT INTO benutzer (bname,email,passwd) VALUES (?,?,?)''', (bname, email,passwd))
+            con.execute("INSERT INTO benutzer (bname,email,passwd) VALUES (?,?,?)", (bname, email,hash(passwd)))
 
             con.commit()
             msg = f"user {bname} successfully added to database"
