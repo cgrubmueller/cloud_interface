@@ -19,13 +19,15 @@ Christian Grubmüller
 
 - Welche Datenbasis bietet sich für einen solchen Use-Case an?
 
-  In diesem Use-Case bietet sich eine dokumentenbasierte Datenbank an, weil sich das Schema später ändern kann (z.B. Geburtsdatum hinzufügen). Außerdem wird wesentlich häufiger auf die Daten lesen zugegriffen, als Daten geändert werden.
+  In diesem Use-Case bietet sich eine dokumentenbasierte Datenbank an, weil sich das Schema später ändern kann (z.B. Geburtsdatum, Präferenzen hinzufügen). Außerdem wird wesentlich häufiger auf die Daten lesen zugegriffen, als Daten geändert werden.
 
   Aufgrund des Problems mit dem Schema kommt eine relationale Datenbank(MySQL) nicht in Frage. Ich würde hier MongoDB verwenden.
 
 - Welche Erfordernisse bezüglich der Datenbasis sollten hier bedacht werden?
+  Dabei sollte beachtet werden, dass die Datenbank, die eine gute Schnittstelle hat, und man mithilfe einer API darauf zugreifen kann. 
 
 - Verschiedene Frameworks bieten schnelle Umsetzungsmöglichkeiten,  welche Eckpunkte müssen jedoch bei einer öffentlichen Bereitstellung  (Production) von solchen Services beachtet werden?
+  
 
 ## Quellen
 
