@@ -1,10 +1,5 @@
-from flask import Flask, g, jsonify, request, render_template
-# import requests
-import time
-import json
-import urllib3
+from flask import Flask, request
 import sqlite3 as sql
-import hashlib
 
 app = Flask(__name__)
 
@@ -14,35 +9,37 @@ def hello_world():
 
 @app.route("/login", methods=["POST"])
 def loginPost():
+    credentials = request.json
     try:
-        bname = request.form['bname']
-        email = request.form['email']
-        passwd = request.form['passwd']
+        bname = credentials['bname']
+        email = credentials['email']
+        passwd = credentials['passwd']
 
         with sql.connect("database.db") as con:
             cur = con.cursor()
             cur.execute("SELECT bname, email, passwd FROM benutzer WHERE email = ? AND passwd = ?", (email, hash(passwd)))
             users = cur.fetchall()
             if (len(users) == 1):
-                msg = "Willkommen!"
+                msg = "\nWillkommen!"
             elif (len(users) > 1):
-                msg = "Fehler"
+                msg = "\nFehler"
             else:
-                msg = "Benutzername oder Passwort ist nicht korrekt"
+                msg = "\nBenutzername oder Passwort ist nicht korrekt"
 
     except:
         con.rollback()
-        msg = "error beim einloggen"
+        msg = "\nerror beim einloggen"
     finally:
         return msg
         con.close()
 
 @app.route("/register", methods=["POST"])
 def signupPOST():
+    credentials = request.json
     try:
-        bname = request.form['bname']
-        email = request.form['email']
-        passwd = request.form['passwd']
+        bname = credentials['bname']
+        email = credentials['email']
+        passwd = credentials['passwd']
 
         with sql.connect("database.db") as con:
             con.execute("drop table benutzer")
@@ -51,11 +48,11 @@ def signupPOST():
             con.execute("INSERT INTO benutzer (bname,email,passwd) VALUES (?,?,?)", (bname, email,hash(passwd)))
 
             con.commit()
-            msg = f"user {bname} successfully added to database"
+            msg = f"\nuser {bname} successfully added to database"
 
     except:
         con.rollback()
-        msg = "error in insert operation"
+        msg = "\nerror in insert operation"
     finally:
         return msg
         con.close()
