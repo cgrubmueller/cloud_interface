@@ -111,6 +111,25 @@ def loginPost():
                 msg = "Benutzername oder Passwort ist nicht korrekt"
 ```
 
+## Deployment mit Docker
+
+Image builden:
+```bash
+docker build --tag rest .
+```
+Image runnen:
+```bash
+docker run --name rest -p 8001:8001 rest
+```
+
+## Docker ohne sudo
+```bash
+# Docker-Gruppe erstellen falls sie nicht vorhanden ist.
+sudo groupadd docker
+# Momentanen User zu der Docker-Gruppe hinzufügen
+sudo gpasswd -a $USER docker
+```
+
 ## Quellen
 
 [1] https://pypi.org/project/Flask/ (07.10.2021)
