@@ -47,13 +47,17 @@ Nachdem dann der Server läuft kann man mit den nachfolgenden Befehlen einen Ben
 ### Registrieren
 
 ```
-curl -X POST -F 'bname=username' -F 'email=email@example.com' -F 'passwd=123456' http://127.0.0.1:8001/register
+curl --location --request POST 'localhost:8001/register' \
+--header 'Content-Type: application/json' \
+--data-raw '{"bname":"cgrubmueller","email":"email@example.com", "passwd":"123456"}'
 ```
 
 ### Einloggen
 
 ```
-curl -X POST -F 'bname=username' -F 'email=email@example.com' -F 'passwd=123456' http://127.0.0.1:8001/login
+curl --location --request POST 'localhost:8001/login' \
+--header 'Content-Type: application/json' \
+--data-raw '{"bname":"cgrubmueller","email":"email@example.com", "passwd":"123456"}'
 ```
 
 
