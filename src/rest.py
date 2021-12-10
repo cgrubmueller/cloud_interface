@@ -1,5 +1,9 @@
 from flask import Flask, request
 import sqlite3 as sql
+import re
+
+# Regex-Pattern für E-Mail
+email_regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
 
 app = Flask(__name__)
 
@@ -15,20 +19,25 @@ def loginPost():
         email = credentials['email']
         passwd = credentials['passwd']
 
-        with sql.connect("database.db") as con:
-            cur = con.cursor()
-            cur.execute("SELECT bname, email, passwd FROM benutzer WHERE email = ? AND passwd = ?", (email, hash(passwd)))
-            users = cur.fetchall()
-            if (len(users) == 1):
-                msg = "\nWillkommen!"
-            elif (len(users) > 1):
-                msg = "\nFehler"
-            else:
-                msg = "\nBenutzername oder Passwort ist nicht korrekt"
+        # checking if the email is valid
+        if re.fullmatch(email_regex, email):
+            # connecting to the database
+            with sql.connect("database.db") as con:
+                cur = con.cursor()
+                cur.execute("SELECT bname, email, passwd FROM benutzer WHERE email = ? AND passwd = ?", (email, hash(passwd)))
+                users = cur.fetchall()
+                if (len(users) == 1):
+                    msg = "\nWelcome!"
+                elif (len(users) > 1):
+                    msg = "\nInternal error: multiple users with the same email???"
+                else:
+                    msg = "\nUsername or password was not correct!"
+        else:
+            msg= f"\nThe email {email} is invalid. Try again with a valid email."
 
     except:
         con.rollback()
-        msg = "\nerror beim einloggen"
+        msg = "\nAn error occured while logging you in!"
     finally:
         return msg
         con.close()
@@ -41,18 +50,35 @@ def signupPOST():
         email = credentials['email']
         passwd = credentials['passwd']
 
-        with sql.connect("database.db") as con:
-            con.execute("drop table benutzer")
-            con.execute("CREATE TABLE IF NOT EXISTS benutzer (email TEXT PRIMARY KEY, bname TEXT, passwd TEXT)")
+        #checking if the email is valid
+        if re.fullmatch(email_regex, email):
+            #connecting to the databse
+            with sql.connect("database.db") as con:
+                con.execute("CREATE TABLE IF NOT EXISTS benutzer (email TEXT PRIMARY KEY, bname TEXT, passwd TEXT)")
 
-            con.execute("INSERT INTO benutzer (bname,email,passwd) VALUES (?,?,?)", (bname, email,hash(passwd)))
+                con.execute("INSERT INTO benutzer (bname,email,passwd) VALUES (?,?,?)", (bname, email,hash(passwd)))
 
-            con.commit()
-            msg = f"\nuser {bname} successfully added to database"
+                con.commit()
+                msg = f"\nUser {bname} successfully added to database."
+        else:
+            msg= f"\nThe email {email} is invalid. Try again with a valid email."
 
     except:
         con.rollback()
-        msg = "\nerror in insert operation"
+        msg = "\nAn user with this email is already registered!"
+    finally:
+        return msg
+        con.close()
+
+@app.route("/reset", methods=["POST"])
+def reset():
+    try:
+        with sql.connect("database.db") as con:
+            con.execute("DROP TABLE benutzer")
+        msg = "Database was successfully reset!"
+    except:
+        con.rollback()
+        msg = "\nError while resetting the Database!"
     finally:
         return msg
         con.close()
