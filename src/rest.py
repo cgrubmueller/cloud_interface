@@ -105,4 +105,4 @@ def reset():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=8001, ssl_context='adhoc')
+    app.run(debug=True, host='0.0.0.0', port=8001, ssl_context=('../cloud_interface.crt', '../cloud_interface.key'))

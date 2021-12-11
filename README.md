@@ -21,22 +21,22 @@ docker run -d -p 8001:8001 cloud_interface
 
 ```bash
 # Registrieren
-curl --location --request POST 'localhost:8001/register' --header 'Content-Type: application/json' --data-raw '{"bname":"cgrubmueller","email":"cgrubmueller@student.tgm.ac.at", "passwd":"123456"}'
+curl --location --request POST 'https://localhost:8001/register' --header 'Content-Type: application/json' --data-raw '{"bname":"cgrubmueller","email":"cgrubmueller@student.tgm.ac.at", "passwd":"123456"}'
 
 # Einloggen -> Welcome
-curl --location --request POST 'localhost:8001/login' --header 'Content-Type: application/json' --data-raw '{"bname":"cgrubmueller","email":"cgrubmueller@student.tgm.ac.at", "passwd":"123456"}'
+curl --location --request POST 'https://localhost:8001/login' --header 'Content-Type: application/json' --data-raw '{"bname":"cgrubmueller","email":"cgrubmueller@student.tgm.ac.at", "passwd":"123456"}'
 
 # Nochmal registrieren -> This email is already in use!
-curl --location --request POST 'localhost:8001/register' --header 'Content-Type: application/json' --data-raw '{"bname":"cgrubmueller","email":"cgrubmueller@student.tgm.ac.at", "passwd":"123456"}'
+curl --location --request POST 'https://localhost:8001/register' --header 'Content-Type: application/json' --data-raw '{"bname":"cgrubmueller","email":"cgrubmueller@student.tgm.ac.at", "passwd":"123456"}'
 
 # Invalide Email -> The email cgrubmuellerstudent.tgm.ac.at is invalid. Try again with a valid email.
-curl --location --request POST 'localhost:8001/login' --header 'Content-Type: application/json' --data-raw '{"bname":"cgrubmueller","email":"cgrubmuellerstudent.tgm.ac.at", "passwd":"123456"}'
+curl --location --request POST 'https://localhost:8001/login' --header 'Content-Type: application/json' --data-raw '{"bname":"cgrubmueller","email":"cgrubmuellerstudent.tgm.ac.at", "passwd":"123456"}'
 
 # Falsche Email -> There are no user registered with this email!
-curl --location --request POST 'localhost:8001/login' --header 'Content-Type: application/json' --data-raw '{"bname":"cgrubmueller","email":"grubmueller@student.tgm.ac.at", "passwd":"123456"}'
+curl --location --request POST 'https://localhost:8001/login' --header 'Content-Type: application/json' --data-raw '{"bname":"cgrubmueller","email":"grubmueller@student.tgm.ac.at", "passwd":"123456"}'
 
 # Falsches Passwort
-curl --location --request POST 'localhost:8001/login' --header 'Content-Type: application/json' --data-raw '{"bname":"cgrubmueller","email":"cgrubmueller@student.tgm.ac.at", "passwd":"156"}'
+curl --location --request POST 'https://localhost:8001/login' --header 'Content-Type: application/json' --data-raw '{"bname":"cgrubmueller","email":"cgrubmueller@student.tgm.ac.at", "passwd":"156"}'
 ```
 
 
