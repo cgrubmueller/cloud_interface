@@ -10,5 +10,3 @@ ADD src/database.db /app
 RUN pip3 install -r requirements.txt
 
 ENTRYPOINT ["./gunicorn.sh"]
-#EXPOSE 8001
-#CMD ["python3", "rest.py"]
