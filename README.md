@@ -124,8 +124,6 @@ if __name__ == "__main__":
 
 `port=8001` bedeutet, dass Port 8001 verwendet wird.
 
-`ssl_context='adhoc'` habe ich hinzugefügt, damit die Verbindung nicht in Plaintext stattfindet (SSL-Zertifikat). Dafür muss man das package *cryptography* mit `pip install cryptography` [^6]
-
 
 
 ### Rest-Schnittstellen
@@ -271,6 +269,40 @@ Hier kann man sehen, dass beim Abspeichern in die Datenbank das gehashte Passwor
 con.execute("INSERT INTO benutzer (bname,email,passwd) VALUES (?,?,?)", (bname, email,hash_password(passwd)))
 ```
 
+## SSL-Zertifikat
+
+Damit ich *https* verwenden kann brauche ich ein *SSL*-Zertifikat. Deshalb habe ich mir ein *self-signed* Zertifikat erstellt. Das kann man in Linux ganz einfach mit `openssl` machen. [^12]
+
+```bash
+openssl req -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out cloud_interface.crt -keyout cloud_interface.key
+```
+
+```
+...
+Country Name (2 letter code) [AU]:AT
+State or Province Name (full name) [Some-State]:Niederoesterreich
+Locality Name (eg, city) []:Bruck an der Leitha
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:SYT
+Organizational Unit Name (eg, section) []:Cloud Interface Uebung
+Common Name (e.g. server FQDN or YOUR name) []:Grubmueller
+Email Address []:cgrubmueller@student.tgm.ac.at
+...
+```
+
+Danach sind zwei Files erstellt. Ein Zertifikat (`cloud_interface.key` und `cloudinterface.crt`)
+
+Anschließend muss ich diese Files bei *gunicorn* hinzufügen. [^11]
+
+```bash
+gunicorn rest:app -w 2 -b 0.0.0.0:8001 --keyfile cloud_interface.key --certfile cloud_interface.crt
+```
+
+Falls man das über Flask machen möchte, kann man das auch in den Parametern übergeben. [^10]
+
+```python
+app.run(debug=True, host='0.0.0.0', port=8001, ssl_context=('../cloud_interface.crt', '../cloud_interface.key'))
+```
+
 
 
 ## Quellen
@@ -285,3 +317,6 @@ con.execute("INSERT INTO benutzer (bname,email,passwd) VALUES (?,?,?)", (bname, 
 [^8]: https://stackoverflow.com/questions/54776600/unable-to-connect-to-flask-while-running-on-docker-container#54776696 (10.12.2021)
 [^9]: https://www.tutorialspoint.com/sqlite/sqlite_python.htm (10.12.2021)
 
+[^10]: https://www.educba.com/flask-https/ (10.12.2021)
+[^11]: https://docs.gunicorn.org/en/stable/settings.html#ssl (10.12.2021)
+[^12]: https://www.ryangeddes.com/how-to-guides/tech/how-to-create-a-self-signed-ssl-certificate-on-linux/ (10.12.2021)
