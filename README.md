@@ -124,7 +124,7 @@ if __name__ == "__main__":
 
 `port=8001` bedeutet, dass Port 8001 verwendet wird.
 
-`ssl_context='adhoc'` habe ich hinzugefügt, damit die Verbindung nicht in Plaintext stattfindet (SSL-Zertifikat) [^6]
+`ssl_context='adhoc'` habe ich hinzugefügt, damit die Verbindung nicht in Plaintext stattfindet (SSL-Zertifikat). Dafür muss man das package *cryptography* mit `pip install cryptography` [^6]
 
 
 
@@ -167,14 +167,20 @@ passwd = credentials['passwd']
 
 ### E-Mail check [^3]
 
-Um zu überprüfen, ob die E-Mail valide ist, verwende ich Regex (Python-Modul: `re`).
+Um zu überprüfen, ob die E-Mail valide ist, verwende ich Regex (Python-Modul: `re`). 
 
 Dafür wird global der String `email_regex` definiert, mit dem dann die Benutzereingaben verglichen werden.
 
 Später im Code kann man dann mit der Methode `fullmatch()` vergleichen ob die E-Mail gültig ist. Wenn sie gültig ist, wird *true* zurückgeliefert, wenn nicht *false*.
 
 ```python
-import re# Regex-Pattern für E-Mailemail_regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'# checking if the email is validre.fullmatch(email_regex, email) # return true or false
+import re
+
+# Regex-Pattern für E-Mail
+email_regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+
+# checking if the email is valid
+re.fullmatch(email_regex, email) # return true or false
 ```
 
 
@@ -192,7 +198,10 @@ Anschließend kann man mit dem Pfad zu dem Datenbankfile auf die Datenbank mitte
 In diesem Beispiel wird auf die Datenbank zugegriffen. Dann werden Daten mittels `SELECT` ausgelesen und in der Variable `users` als Array, das Tupels enthält, abgespeichert.
 
 ```python
-with sql.connect("database.db") as con:    cur = con.cursor()    cur.execute(f"SELECT bname, email, passwd FROM benutzer WHERE email = ?", [email])    users = cur.fetchall()
+with sql.connect("database.db") as con:
+    cur = con.cursor()
+    cur.execute(f"SELECT bname, email, passwd FROM benutzer WHERE email = ?", [email])
+    users = cur.fetchall()
 ```
 
 #### Schreiben
@@ -200,7 +209,10 @@ with sql.connect("database.db") as con:    cur = con.cursor()    cur.execute(f"S
 Hier werden Daten in die Tabelle Benutzer abgespeichert. Falls diese Tabelle noch nicht existiert, wird sie erstellt. Nachdem man die Daten insertet hat, wird diese Transaktion commitet, damit die Daten auch wirklich abgespeichert sind. Natürlich werden sie mit einem *prepared statement* abgespeichert, da ansonsten SQL-Injections möglich sind.
 
 ```python
-with sql.connect("database.db") as con:    con.execute("CREATE TABLE IF NOT EXISTS benutzer (email TEXT PRIMARY KEY, bname TEXT, passwd TEXT)")    con.execute("INSERT INTO benutzer (bname,email,passwd) VALUES (?,?,?)", (bname, email,hash_password(passwd)))    con.commit()
+with sql.connect("database.db") as con:
+    con.execute("CREATE TABLE IF NOT EXISTS benutzer (email TEXT PRIMARY KEY, bname TEXT, passwd TEXT)")
+    con.execute("INSERT INTO benutzer (bname,email,passwd) VALUES (?,?,?)", (bname, email,hash_password(passwd)))
+    con.commit()
 ```
 
 #### Zurücksetzten
@@ -208,7 +220,8 @@ with sql.connect("database.db") as con:    con.execute("CREATE TABLE IF NOT EXIS
 Um die Datenbank zurücksetzten, muss man einfach nur die Tabelle `benutzer` löschen.
 
 ```python
-with sql.connect("database.db") as con:    con.execute("DROP TABLE benutzer")
+with sql.connect("database.db") as con:
+    con.execute("DROP TABLE benutzer")
 ```
 
 
@@ -222,7 +235,19 @@ Ein *salt* ist eine Zufallszahl, die mit dem Hash addiert wird und mit einem `:`
 Das habe ich mit zwei Methoden in Python umgesetzt.
 
 ```python
-import uuidimport hashlib # Hasht ein Passwort und generiert einen salt-Wertdef hash_password(password):    # uuid is used to generate a random number    salt = uuid.uuid4().hex    return hashlib.sha256(salt.encode() + password.encode()).hexdigest() + ':' + salt# Überprüft, ob ein Passwort richtig ist.def check_password(hashed_password, user_password):    password, salt = hashed_password.split(':')    return password == hashlib.sha256(salt.encode() + user_password.encode()).hexdigest()
+import uuid
+import hashlib 
+
+# Hasht ein Passwort und generiert einen salt-Wert
+def hash_password(password):
+    # uuid is used to generate a random number
+    salt = uuid.uuid4().hex
+    return hashlib.sha256(salt.encode() + password.encode()).hexdigest() + ':' + salt
+
+# Überprüft, ob ein Passwort richtig ist.
+def check_password(hashed_password, user_password):
+    password, salt = hashed_password.split(':')
+    return password == hashlib.sha256(salt.encode() + user_password.encode()).hexdigest()
 ```
 
 #### Verwendung
@@ -232,7 +257,10 @@ import uuidimport hashlib # Hasht ein Passwort und generiert einen salt-Wertdef 
 Um das eingegeben Passwort zu überprüfen, kann man die obere Methode in einem `if` verwenden.
 
 ```python
-if check_password(users[0][2] , passwd):    msg = "\nWelcome!"else:    msg = "\nUsername or password was not correct!"
+if check_password(users[0][2] , passwd):
+    msg = "\nWelcome!"
+else:
+    msg = "\nUsername or password was not correct!"
 ```
 
 ##### Registrieren
@@ -256,3 +284,4 @@ con.execute("INSERT INTO benutzer (bname,email,passwd) VALUES (?,?,?)", (bname, 
 [^7]: https://www.pythoncentral.io/hashing-strings-with-python/ (10.12.2021)
 [^8]: https://stackoverflow.com/questions/54776600/unable-to-connect-to-flask-while-running-on-docker-container#54776696 (10.12.2021)
 [^9]: https://www.tutorialspoint.com/sqlite/sqlite_python.htm (10.12.2021)
+
