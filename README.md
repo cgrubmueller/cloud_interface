@@ -1,8 +1,10 @@
 # README
 
-Christian Grubmüller
+**Autor:** Christian Grubmüller
 
-10.12.2021
+**Datum:** 10.12.2021
+
+In diesem Repository ist eine Aufgabe, die ich für die Schule gemacht habe. Die Aufgabe war eine *REST-Schnittstelle* zu implementieren, bei der man sich mit *Anfragen* **registrieren** und **anmelden** kann. Die Schnittstelle wurde mit *Python* und *Flask* umgesetzt. Die E-Mail wird bei der Registrierung auf die Gültigkeit überprüft und dann mit dem gehashten Passwort in einer *SQLite* Datenbank abgespeichert. Damit die Verbindung gesichert ist, wurde auch ein selbst signiertes *SSL-Zertifikat* hinzugefügt. Das Deployment erfolgt über einen *Gunicorn* in einem *Docker*-Container.
 
 ## Ausführen
 
@@ -47,7 +49,7 @@ Da man Python an sich eigentlich nicht deployen kann, verwende ich Docker.
 
 Dafür habe ich ein File namens `Dokerfile` erstellt. In diesem File wird definiert, dass *python:3.7-alpine* als "Grundlage" verwendet werden soll. Dann wird der Ordner `/app` erstellt und als Working-Directory definiert.
 
-Anschließend werden die Datein, die notwendig für die Ausführung des Programms sind hinzugefügt.
+Anschließend werden die Dateien, die notwendig für die Ausführung des Programms sind hinzugefügt.
 
 Danach werden alle Python-Dependencies geladen.
 
